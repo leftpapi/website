@@ -1,181 +1,257 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stop the One-Word Spam</title>
+  <title>no spam</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
+    /* basic setup */
+    :root {
+      --bg: #ffffff;
+      --text: #222222;
+      --sub-text: #666666;
+      --accent: #007aff;
+      --red: #ff5252;
+      --green: #4caf50;
+      --gray: #e9e9eb;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111111;
+        --text: #eeeeee;
+        --sub-text: #aaaaaa;
+        --gray: #333333;
+      }
+    }
+
     body {
-      background: #0f0f0f;
-      color: #ddd;
-      font-family: system-ui, -apple-system, sans-serif;
-      margin: 0;
-      padding: 20px;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      max-width: 850px;
+      margin: 0 auto;
+      padding: 50px 20px;
       line-height: 1.5;
     }
 
-    .container {
-      max-width: 680px;
-      margin: 0 auto;
+    /* header stuff */
+    header { margin-bottom: 50px; }
+    
+    h1 { 
+      font-size: 3rem; 
+      font-weight: 800; 
+      margin: 0; 
+      letter-spacing: -0.04em; 
+    }
+    
+    #typing-area { 
+      font-size: 2rem; 
+      font-weight: 700; 
+      height: 50px; 
+      margin-top: 5px; 
     }
 
-    h1 {
-      color: #ffaa00;
-      text-align: center;
-      font-size: 2.8rem;
-      margin: 0.5em 0 0.2em;
+    #cursor { 
+      border-right: 3px solid var(--accent); 
+      padding-right: 5px; 
     }
 
-    .anti-spam {
-      color: #ff4444;
-      font-weight: bold;
-      text-align: center;
+    .line-through {
+      position: relative;
+    }
+
+    .line-through::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 55%;
+      width: 100%;
+      height: 4px;
+      background: var(--red);
+    }
+
+    .intro-text {
       font-size: 1.3rem;
-      margin-bottom: 8px;
+      color: var(--sub-text);
+      margin-top: 25px;
+      font-weight: 500;
     }
 
-    .imagine {
-      text-align: center;
-      color: #aaa;
-      margin: 0 0 40px;
-      font-size: 1.1rem;
-      max-width: 580px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .section-title {
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin: 2rem 0 0.8rem;
-      font-weight: bold;
-    }
-
-    .bad { color: #ff5555; }
-    .good { color: #44cc44; }
-
-    .chat-box {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 24px;
-    }
-
-    .bad-chat { border-left: 5px solid #ff5555; }
-    .good-chat { border-left: 5px solid #44cc44; }
-
-    .message {
+    /* chat UI */
+    .comparison {
       display: flex;
-      gap: 12px;
-      margin-bottom: 14px;
+      gap: 30px;
+      margin: 40px 0;
     }
 
-    .pfp {
-      width: 44px;
-      height: 44px;
-      border-radius: 8px;
-      background: #444;
-      object-fit: cover;
-      border: 1px solid #444;
+    @media (max-width: 700px) {
+      .comparison { flex-direction: column; }
     }
 
-    .msg-content {
-      flex: 1;
+    .side { flex: 1; }
+
+    .header-label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    .username {
-      font-weight: bold;
+    .window {
+      background: var(--bg);
+      border: 1px solid var(--gray);
+      border-radius: 15px;
+      padding: 20px;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bubble {
+      padding: 10px 15px;
+      border-radius: 18px;
       font-size: 0.95rem;
+      max-width: 80%;
+      width: fit-content;
     }
 
-    .timestamp {
-      color: #777;
-      font-size: 0.75rem;
-      margin-left: 8px;
+    .in { background: var(--gray); color: var(--text); border-bottom-left-radius: 4px; }
+    .out { background: var(--accent); color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
+
+    /* typing dots */
+    .dots {
+      display: flex;
+      gap: 4px;
+      padding: 12px 15px;
+      background: var(--gray);
+      border-radius: 18px;
+      width: fit-content;
+      margin-top: 10px;
     }
 
-    .text {
-      color: #ccc;
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--sub-text);
+      border-radius: 50%;
+      animation: blink 1.4s infinite both;
     }
 
-    .explanation {
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(1); }
+      40% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* bottom warnings */
+    .warning-box {
+      margin-top: 60px;
+      padding: 25px;
+      border-radius: 10px;
+      background: rgba(255, 82, 82, 0.08);
+      border-left: 5px solid var(--red);
+    }
+
+    .final-word {
+      font-size: 1.1rem;
+      color: var(--sub-text);
       text-align: center;
-      color: #999;
-      font-size: 0.95rem;
-      margin: 16px 0 32px;
-    }
-
-    footer {
-      text-align: center;
-      color: #666;
-      font-size: 0.85rem;
-      margin-top: 40px;
-    }
-
-    @media (prefers-color-scheme: light) {
-      body { background: #f8f8f8; color: #222; }
-      .chat-box { background: white; border-color: #ddd; }
-      .text { color: #444; }
+      margin-top: 50px;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Stop One-Word Ping-Pong</h1>
-    <div class="anti-spam">Quit spamming one-word messages ffs</div>
-    <div class="imagine">Imagine typing "yo" → "bro" → "u there?" and then finally asking your actual question 5 minutes later… just type the damn question first.</div>
+  <header>
+    <h1>no spam</h1>
+    <div id="typing-area"><span id="cursor"></span></div>
+    
+    <div class="intro-text">
+      Imagine spamming your friend until they respond and then finally asking your question. 
+      It's actually annoying for everyone involved. Just send the context in the first message.
+    </div>
+  </header>
 
-    <div class="section-title bad">❌ Notification spam hell</div>
-    <div class="chat-box bad-chat">
-      <div class="message">
-        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0a071573-3155-4a1f-8610-3289c87744e0/dha0vdw-f1fad495-d8ef-4853-94a3-a9ece0bb40c2.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi8wYTA3MTU3My0zMTU1LTRhMWYtODYxMC0zMjg5Yzg3NzQ0ZTAvZGhhMHZkdy1mMWZhZDQ5NS1kOGVmLTQ4NTMtOTRhMy1hOWVjZTBiYjQwYzIucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J_P9kVqr4hWIccZlaCVUfSDeyPmcyoj2TixDzNI_wtk" alt="Kevin" class="pfp">
-        <div class="msg-content">
-          <div class="username">Kevin <span class="timestamp">10:01 AM</span></div>
-          <div class="text">yo</div>
+  <div class="comparison">
+    <div class="side">
+      <div class="header-label" style="color: var(--red);">don't do this</div>
+      <div class="window">
+        <div class="bubble in">yo</div>
+        <div class="bubble in">bro</div>
+        <div class="bubble in">you there?</div>
+        
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
         </div>
-      </div>
-      <div class="message">
-        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0a071573-3155-4a1f-8610-3289c87744e0/dha0vdw-f1fad495-d8ef-4853-94a3-a9ece0bb40c2.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..." alt="Kevin" class="pfp">
-        <div class="msg-content">
-          <div class="username">Kevin <span class="timestamp">10:02 AM</span></div>
-          <div class="text">bro</div>
-        </div>
-      </div>
-      <div class="message">
-        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0a071573-3155-4a1f-8610-3289c87744e0/dha0vdw-f1fad495-d8ef-4853-94a3-a9ece0bb40c2.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..." alt="Kevin" class="pfp">
-        <div class="msg-content">
-          <div class="username">Kevin <span class="timestamp">10:02 AM</span></div>
-          <div class="text">i got a question</div>
-        </div>
+        <span style="font-size: 0.75rem; color: var(--sub-text); margin-left: 5px;">Kevin is typing...</span>
       </div>
     </div>
 
-    <div class="explanation">Kevin could’ve had his answer already if he just asked the real question instead of this bullshit.</div>
-
-    <div class="section-title good">✅ Just say it</div>
-    <div class="chat-box good-chat">
-      <div class="message">
-        <img src="https://wallpapers.com/images/hd/the-boss-baby-in-black-suit-yd44264nmufqaqfd.jpg" alt="Theodore" class="pfp">
-        <div class="msg-content">
-          <div class="username">Theodore <span class="timestamp">10:05 AM</span></div>
-          <div class="text">Yo, quick question — when’s the project actually due? Appreciate it</div>
-        </div>
-      </div>
-      <div class="message">
-        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0a071573-3155-4a1f-8610-3289c87744e0/dha0vdw-f1fad495-d8ef-4853-94a3-a9ece0bb40c2.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..." alt="Kevin" class="pfp">
-        <div class="msg-content">
-          <div class="username">Kevin <span class="timestamp">10:06 AM</span></div>
-          <div class="text">9PM tonight. Np</div>
-        </div>
+    <div class="side">
+      <div class="header-label" style="color: var(--green);">do this instead</div>
+      <div class="window">
+        <div class="bubble in">Hey, do you know when the project is due? Thanks!</div>
+        <div class="bubble out" style="margin-top: 20px;">9PM tonight. No problem!</div>
       </div>
     </div>
-
-    <footer>made to stop the insanity • 2025</footer>
   </div>
 
+  <div class="warning-box">
+    If you see this link in someone's status or bio and you still choose to spam them with one word at a time, get ready for them to just ignore you. They'll probably get mad or just stop opening your chats entirely.
+  </div>
+
+  <div class="final-word">
+    Stop flooding notifications. Get to the point.
+  </div>
+
+  <script>
+    const words = ["yo", "hi", "hey", "sup", "hello", "bro"];
+    const el = document.getElementById("cursor");
+    let wordIdx = 0;
+    let charIdx = 0;
+    let deleting = false;
+
+    function handleTyping() {
+      const currentWord = words[wordIdx];
+
+      if (!deleting && charIdx <= currentWord.length) {
+        el.textContent = currentWord.substring(0, charIdx);
+        charIdx++;
+        setTimeout(handleTyping, 120);
+      } 
+      else if (deleting && charIdx >= 0) {
+        el.textContent = currentWord.substring(0, charIdx);
+        charIdx--;
+        setTimeout(handleTyping, 60);
+      } 
+      else if (!deleting && charIdx > currentWord.length) {
+        el.classList.add("line-through");
+        setTimeout(() => {
+          el.classList.remove("line-through");
+          deleting = true;
+          handleTyping();
+        }, 1200);
+      } 
+      else {
+        deleting = false;
+        wordIdx = (wordIdx + 1) % words.length;
+        charIdx = 0;
+        setTimeout(handleTyping, 500);
+      }
+    }
+
+    handleTyping();
+  </script>
 </body>
 </html>
